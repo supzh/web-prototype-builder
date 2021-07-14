@@ -1,0 +1,150 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>页面原型制作工具</title>
+<meta name="viewport" content="width=device-width, maximum-scale=1.0,user-scalable=no" />
+<script src="jquery.js"></script>
+<style>
+.bg {background:linear-gradient(#000,#fff);position:absolute;z-index:-1;width:100%;height:400px;}
+* {margin:0;padding:0;}
+.p {background:#fff;margin:5px auto;width:1020px;height:auto; border:2px dotted orange;overflow:auto;resize:both;}
+.remove {background:red;width:20px;height:20px;float:right;cursor:pointer;border-radius:5px;margin:2px;}
+.drag {float:left;margin:5px;float:left;resize:both;overflow:auto;width:300px;height:300px;background:#fff;border:2px dotted blue;}
+.add {float:left;margin:15px;width:80px;height:80px;border:1px solid blue;background:blue;border-radius:50%;color:#fff;font-size:17px;text-align:center;line-height:80px;font-weight:bold;cursor:pointer;}
+.ap_ad {margin:0 auto;width:80px;height:80px;background:orange;border-radius:50%;color:#fff;font-size:17px;font-weight:bold;line-height:80px;text-align:center;cursor:pointer;}
+.rmp {float:left;margin:15px;width:80px;height:80px;background:orange;border-radius:50%;color:#fff;font-size:12px;font-weight:bold;line-height:80px;text-align:center;cursor:pointer;}
+.e {width:100%;height:100%;font-size:17px;font-weight:bold;}
+.ap {padding-bottom:50px;}
+.t {width:100%;background:#000;padding:10px 0;color:#fff;margin:0 auto;text-align:center;font-size:17px;font-weight:bold;}
+.xp {width:100%;background:linear-gradient(#000,#000);position:fixed;bottom:0;margin-top:10px;padding:10px 0;color:#fff;margin:0 auto;text-align:center;font-size:17px;font-weight:bold;}
+#export {font-size;14px;padding:3px 10px;font-weight:bold;}
+.txt {width:1020px;margin:0 auto;color:#333;}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<div class="t">
+	页面原型制作工具
+</div>
+<div class="ap">
+	<div class="p">
+		
+		<div class="drag"  draggable="true"  style="width:692px;">
+		<div class="remove"></div>
+		<div contenteditable="true" class="e"></div>
+		</div>
+		
+		<div  class="drag" draggable="true" >
+		
+		<div class="remove"></div>
+		<div contenteditable="true" class="e"></div>
+		</div>
+		
+
+		
+		<div class="add">添加</div>
+		<div class="rmp">删除本区域</div>
+		<div style="clear:both"></div>
+	</div>
+
+	<div class="ap_ad">添加</div>
+	
+	<div class="txt">说明:<br />1. 点击红色方块删除区块<br />2. 每个区块(蓝色)和区域(橙色)右下角可进行区块大小拖动</div>
+</div>
+
+<div class="xp">
+	<button id="export">导出页面</button>
+</div>
+<script>
+$(function(){
+	function fakeClick(obj) {
+	  var ev = document.createEvent("MouseEvents");
+	  ev.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+	  obj.dispatchEvent(ev);
+	}
+
+	function exportRaw(name, data) {
+	  var urlObject = window.URL || window.webkitURL || window;
+	  var export_blob = new Blob([data]);
+	  var save_link = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
+	  save_link.href = urlObject.createObjectURL(export_blob);
+	  save_link.download = name;
+	  fakeClick(save_link);
+	}
+
+	function setRemove()
+	{
+		$(".remove").unbind()
+		$('.remove').click(function(e){
+			e.target.parentElement.remove()
+		})
+	}
+
+	function setAdd()
+	{
+		$(".add").unbind()
+		$(".add").click(function(e){
+			p = e.target.parentElement
+			
+			var div = document.createElement('div')
+			div.className="drag"
+			div.draggable= true
+			var rm = document.createElement('div')
+			rm.className="remove"
+			div.append(rm)
+			var ei = document.createElement('div')
+			ei.className="e"
+			ei.contentEditable = true
+			div.append(ei)
+			
+			e.target.before(div)
+			setRemove()
+			setRemoveP();
+		})
+	}
+	
+	function setRemoveP()
+	{
+		$(".rmp").unbind()
+		$(".rmp").click(function(e){
+			 e.target.parentElement.remove()
+		})
+	}
+	
+	$("#export").click(function(){
+		str = $('html').html() + '<style>.rmp, .ap_ad, .remove, .add, .txt,  .xp, .t {display:none;}</style>'
+		exportRaw('prototype.html',str)
+	})
+	
+	$(".ap_ad").click(function(e){
+		p = e.target.parentElement
+		
+		var div = document.createElement('div')
+		div.className="p"
+		div.draggable= true
+		var add = document.createElement('div')
+		add.className="add"
+		add.innerText='添加'
+		div.append(add)
+		
+		var add = document.createElement ('div')
+		add.className="rmp"
+		add.innerText='删除本区域'
+		div.append(add)
+		
+		e.target.before(div)
+		setRemove()
+		setRemoveP();
+		setAdd()
+	})
+	
+	setRemove()
+	setRemoveP()
+	setAdd()
+	
+})
+
+</script>
+</body>
+</html>
